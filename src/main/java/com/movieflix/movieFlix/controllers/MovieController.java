@@ -3,6 +3,7 @@ package com.movieflix.movieFlix.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.movieflix.movieFlix.dto.MovieDto;
+import com.movieflix.movieFlix.exceptions.EmptyFileException;
 import com.movieflix.movieFlix.service.MovieService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,11 @@ public class MovieController {
     }
 
     @PostMapping("/add-movie")
-    public ResponseEntity<MovieDto> addMovieHandler(@RequestPart MultipartFile file, @RequestParam String movieDto) throws IOException {
+    public ResponseEntity<MovieDto> addMovieHandler(@RequestPart MultipartFile file, @RequestParam String movieDto) throws IOException, EmptyFileException {
+
+        if(file.isEmpty()) {
+            throw new EmptyFileException("File is empty! Please send a file");
+        }
 
     MovieDto dto = convertMovieToDto(movieDto);
     return new ResponseEntity<>(movieService.addMovie(dto,file), HttpStatus.CREATED);
@@ -60,7 +65,7 @@ public class MovieController {
         try {
             movieDto = convertMovieToDto(movieDtoString);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); // Handle invalid input gracefully
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 
         // Process the update
