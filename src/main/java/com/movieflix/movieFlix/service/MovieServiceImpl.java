@@ -211,7 +211,6 @@ public class MovieServiceImpl implements MovieService {
 
         Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
         Page<Movie> moviePages = movieRepository.findAll(pageable);
-        List<Movie> moviesList = moviePages.getContent();
 
 
         // Convert to MovieDto using Streams
